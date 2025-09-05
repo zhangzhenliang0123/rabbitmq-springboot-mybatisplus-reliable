@@ -1,0 +1,137 @@
+server:
+  port: 10000
+  shutdown: graceful  # 启用优雅停机
+
+spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    serialization:
+      write-dates-as-timestamps: false # 禁用时间戳
+  lifecycle:
+    timeout-per-shutdown-phase: 30s  # 宽限期（默认30秒）
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/demo?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: Demo123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      # 连接池配置
+      initial-size: 10
+      min-idle: 10
+      max-active: 100
+      max-wait: 60000
+
+      # 连接有效性检查
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+
+      # 连接回收策略
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      max-evictable-idle-time-millis: 600000
+
+      # 监控配置（适配Spring Boot 3.1.x）
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*   # 保持与资源处理器一致
+        reset-enable: false            # 禁用重置功能
+#        login-username: admin  # 生产环境建议配置
+#        login-password: Hx1y3bb  # 生产环境建议配置
+
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,/webjars/*"
+      filter:
+        stat:
+          enabled: true
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          enabled: true
+          config:
+            multi-statement-allow: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: Demo123
+    # 虚拟主机，默认是"/"
+    virtual-host: /
+    # 开启消息确认机制
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    listener:
+      simple:
+        # 手动确认消息
+        acknowledge-mode: manual
+        # 单个消费者预取消息个数，springboot默认250
+        prefetch: 10
+        # 消费者并发设置
+        concurrency: 1
+        max-concurrency: 10
+        # 消费重试配置
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1000ms
+          multiplier: 2.0
+          max-interval: 10000ms
+    template:
+      # 发送重试配置
+      retry:
+        enabled: true       # 总开关：是否启用重试机制
+        initial-interval: 1000ms  # 首次重试的间隔时间（第一次失败后等1秒再试）
+        multiplier: 2       # 间隔乘数（下一次的间隔 = 上一次间隔 * multiplier）
+        max-attempts: 3     # 最大重试次数（包括第一次发送，总共尝试3次）
+        max-interval: 10000ms # 最大重试间隔（无论乘数计算出的值多大，都不会超过10秒）
+      # 无法路由到队列，返回处理，会执行ReturnCallback
+      mandatory: true
+
+# 新增 Actuator 管理端口配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  endpoint:
+    shutdown:
+      enabled: true
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+    default-enum-type-handler: org.apache.ibatis.type.EnumTypeHandler
+    jdbc-type-for-null: 'NULL'
+  mapper-locations: classpath:mapper/**/*Mapper.xml
+  type-aliases-package: xyz.zhenliang.**.entity
+
+mq:
+  id-prefix: demo
+
+knife4j:
+  #开启增强配置
+  enable: true
+  setting:
+    enable-dynamic-parameter: true
+  #开启生产环境屏蔽
+  production: false
+  basic:
+    enable: false
+#    username: admin
+#    password: Demo123
+
+logging:
+  file:
+    path: ./logs
