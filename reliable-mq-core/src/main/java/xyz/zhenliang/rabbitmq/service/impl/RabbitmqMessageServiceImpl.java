@@ -188,7 +188,7 @@ public class RabbitmqMessageServiceImpl extends ServiceImpl<RabbitmqMessageMappe
      * @param messageId 消息ID
      * @return 是否更新成功
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     @Override
     public boolean resendMsg(String messageId) {
         LambdaUpdateWrapper<RabbitmqMessage> updateWrapper = new LambdaUpdateWrapper<>();
