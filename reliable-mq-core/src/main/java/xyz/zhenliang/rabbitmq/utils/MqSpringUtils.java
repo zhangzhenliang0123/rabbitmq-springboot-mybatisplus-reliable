@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @version 1.0
  */
 @Component("rabbitMqSpringUtils")
-public class SpringUtils implements ApplicationContextAware {
+public class MqSpringUtils implements ApplicationContextAware {
     /**
      * Spring应用上下文，用于获取容器中的Bean
      */
@@ -28,7 +28,7 @@ public class SpringUtils implements ApplicationContextAware {
      */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        SpringUtils.applicationContext = applicationContext;
+        MqSpringUtils.applicationContext = applicationContext;
     }
 
     /**

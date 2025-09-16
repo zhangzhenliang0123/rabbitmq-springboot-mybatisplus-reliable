@@ -8,9 +8,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.zhenliang.rabbitmq.entity.RabbitmqMessage;
 import xyz.zhenliang.rabbitmq.reminder.IRabbitmqReminder;
-import xyz.zhenliang.rabbitmq.sender.impl.RabbitmqSenderImpl;
 import xyz.zhenliang.rabbitmq.service.IRabbitmqMessageService;
-import xyz.zhenliang.rabbitmq.utils.SpringUtils;
+import xyz.zhenliang.rabbitmq.utils.MqSpringUtils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -42,7 +41,7 @@ public class RabbitmqReminderService {
     public void sendFailedReminder(String messageId, String cause) {
         RabbitmqMessage message = rabbitmqMessageService.getById(messageId);
         if (message != null) {
-            IRabbitmqReminder rabbitmqReminder = SpringUtils.getBean(IRabbitmqReminder.class);
+            IRabbitmqReminder rabbitmqReminder = MqSpringUtils.getBean(IRabbitmqReminder.class);
             if (rabbitmqReminder == null) return;
             rabbitmqReminder.sendFailedReminder(messageId, message.getMessageBody(), cause);
         }
@@ -54,7 +53,7 @@ public class RabbitmqReminderService {
      */
     public void sendFailedReminder(String messageId, String messageBody, Throwable e) {
         try {
-            IRabbitmqReminder rabbitmqReminder = SpringUtils.getBean(IRabbitmqReminder.class);
+            IRabbitmqReminder rabbitmqReminder = MqSpringUtils.getBean(IRabbitmqReminder.class);
             if (rabbitmqReminder == null) return;
             // 修改:将e.getMessage()改为获取异常堆栈信息
             String errorMessage = getStackTraceAsString(e);
@@ -71,7 +70,7 @@ public class RabbitmqReminderService {
      */
     public void consumeFailedReminder(String messageId, String messageBody, Throwable e) {
         try {
-            IRabbitmqReminder rabbitmqReminder = SpringUtils.getBean(IRabbitmqReminder.class);
+            IRabbitmqReminder rabbitmqReminder = MqSpringUtils.getBean(IRabbitmqReminder.class);
             if (rabbitmqReminder == null) return;
             // 修改:将e.getMessage()改为获取异常堆栈信息
             String errorMessage = getStackTraceAsString(e);

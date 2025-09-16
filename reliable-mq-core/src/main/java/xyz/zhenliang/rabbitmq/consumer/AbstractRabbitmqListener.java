@@ -11,7 +11,7 @@ import xyz.zhenliang.rabbitmq.rescue.retry.RabbitmqRetryManager;
 import xyz.zhenliang.rabbitmq.service.IRabbitmqMessageService;
 import xyz.zhenliang.rabbitmq.service.impl.RabbitmqReminderService;
 import xyz.zhenliang.rabbitmq.utils.JsonUtils;
-import xyz.zhenliang.rabbitmq.utils.SpringUtils;
+import xyz.zhenliang.rabbitmq.utils.MqSpringUtils;
 import xyz.zhenliang.rabbitmq.utils.RabbitmqUtils;
 
 import java.lang.reflect.ParameterizedType;
@@ -105,14 +105,14 @@ public abstract class AbstractRabbitmqListener<T> {
     public void consume(Message message, Channel channel) {
 
         // 获取重试管理器实例
-        RabbitmqRetryManager retryManager = SpringUtils.getBean(RabbitmqRetryManager.class);
+        RabbitmqRetryManager retryManager = MqSpringUtils.getBean(RabbitmqRetryManager.class);
 
         // 获取消息的deliveryTag，用于消息确认
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
 
         String messageId = null;
         // 获取消息服务实例
-        IRabbitmqMessageService rabbitmqMessageService = SpringUtils.getBean(IRabbitmqMessageService.class);
+        IRabbitmqMessageService rabbitmqMessageService = MqSpringUtils.getBean(IRabbitmqMessageService.class);
         RabbitmqMsgDTO<T> msgDTO = null;
         String messageBody = null;
 
@@ -183,7 +183,7 @@ public abstract class AbstractRabbitmqListener<T> {
     }
 
     public void consumeFailedReminder(String messageId, String messageBody, Exception e) {
-        RabbitmqReminderService rabbitmqReminder = SpringUtils.getBean(RabbitmqReminderService.class);
+        RabbitmqReminderService rabbitmqReminder = MqSpringUtils.getBean(RabbitmqReminderService.class);
         rabbitmqReminder.consumeFailedReminder(messageId, messageBody, e);
     }
 

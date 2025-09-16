@@ -27,7 +27,7 @@ import xyz.zhenliang.rabbitmq.service.IRabbitmqMessageService;
 import xyz.zhenliang.rabbitmq.service.impl.RabbitmqReminderService;
 import xyz.zhenliang.rabbitmq.utils.JsonUtils;
 import xyz.zhenliang.rabbitmq.utils.RabbitmqUtils;
-import xyz.zhenliang.rabbitmq.utils.SpringUtils;
+import xyz.zhenliang.rabbitmq.utils.MqSpringUtils;
 import xyz.zhenliang.rabbitmq.utils.UUIDUtils;
 
 /**
@@ -147,7 +147,7 @@ public class RabbitmqSenderImpl implements IRabbitmqSender {
      */
     public <T> void send(String exchange, String routingKey, RabbitmqMsgDTO<T> msgDTO) {
         String messageId = msgDTO.getMessageId();
-        RabbitmqSenderImpl sender = SpringUtils.getBean(RabbitmqSenderImpl.class);
+        RabbitmqSenderImpl sender = MqSpringUtils.getBean(RabbitmqSenderImpl.class);
         // 异步发送消息
         sender.send(exchange, routingKey, messageId, msgDTO.getBusinessId(), JsonUtils.toJson(msgDTO));
     }
